@@ -1,6 +1,6 @@
 import { Queue } from "./queue";
 import { Animator, AnimatorStates } from "./animator";
-import { Message, MessageOptions } from "./message";
+import { Message, MessageContentStyles } from "./message";
 import { Logger, LoggerOptions } from "./logger";
 import {
   getRandomFromArray,
@@ -21,10 +21,7 @@ export enum Direction {
 export type VirtualAssistantOptions = {
   loggerOptions?: LoggerOptions;
   classKey?: string;
-  messageOptions?: Pick<
-    MessageOptions,
-    "contentMessageStyle" | "contentWrapperStyle"
-  >;
+  messageOptions?: MessageContentStyles;
 };
 
 export class VirtualAssistant {
@@ -90,11 +87,17 @@ export class VirtualAssistant {
 
   /**************************** API ************************************/
 
-  existsInDom() {
+  /**
+   * Checks if the virtual assistant exists in the DOM
+   */
+  existsInDom(): boolean {
     return !!document.querySelector(this.classKey);
   }
 
-  addToDom() {
+  /**
+   * Adds the virtual assistant to the DOM, if not already present
+   */
+  addToDom(): void {
     if (!this.existsInDom()) {
       document.body.append(this._el);
     } else {
@@ -104,7 +107,10 @@ export class VirtualAssistant {
     }
   }
 
-  removeFromDom() {
+  /**
+   * Removes the virtual assistant from the DOM, if present
+   */
+  removeFromDom(): void {
     if (this.existsInDom()) {
       document.body.removeChild(this._el);
     } else {
@@ -114,7 +120,11 @@ export class VirtualAssistant {
     }
   }
 
-  gestureAt(x: number, y: number) {
+  /**
+   * Gestures at a given position, if gesture animation exists.
+   * Falls back to look animation if gesture animation does not exist.
+   */
+  gestureAt(x: number, y: number): boolean {
     const direction = this._getDirection(x, y);
     const gestureAnimation = "Gesture" + direction;
     const LookAnimation = "Look" + direction;
@@ -125,7 +135,10 @@ export class VirtualAssistant {
     return this.play(animation);
   }
 
-  hide(fast: boolean, callback: VoidFn) {
+  /**
+   * Hide the virtual assistant
+   */
+  hide(fast: boolean, callback: VoidFn): void {
     this._hidden = true;
     this.stop();
     if (fast) {
@@ -143,7 +156,10 @@ export class VirtualAssistant {
     });
   }
 
-  moveTo(x: number, y: number, duration: number = 1000) {
+  /**
+   * Move the virtual assistant to a given position
+   */
+  moveTo(x: number, y: number, duration: number = 1000): void {
     const direction = this._getDirection(x, y);
     const moveAnimation = "Move" + direction;
 
@@ -195,7 +211,10 @@ export class VirtualAssistant {
     this._animator.showAnimation(animation, callback);
   }
 
-  play(animation: string, timeout = 5000, cb?: VoidFn) {
+  /**
+   * Plays an animation
+   */
+  play(animation: string, timeout = 5000, cb?: VoidFn): boolean {
     if (!this.hasAnimation(animation)) return false;
 
     this._addToQueue((complete) => {
@@ -222,14 +241,17 @@ export class VirtualAssistant {
     return true;
   }
 
-  show(fast: boolean = false) {
+  /**
+   * Shows the virtual assistant
+   */
+  show(fast: boolean = false): boolean {
     this._hidden = false;
 
     if (fast) {
       this._el.style.display = "";
       this.resume();
       this._onQueueEmpty();
-      return;
+      return true;
     }
 
     if (this._el.style.top === "auto" || this._el.style.left !== "auto") {
@@ -243,50 +265,70 @@ export class VirtualAssistant {
     return this.play("Show");
   }
 
-  speak(text: string, hold?: Message["_hold"]) {
+  /**
+   * Toggles the message box with the given text
+   */
+  speak(text: string, hold?: Message["_hold"]): void {
     this._logger.info("AddingSpeak", text);
     this._addToQueue((complete) => {
       this._message.speak(complete, text, hold);
     }, this);
   }
 
-  /** Close the current message */
-  closeMessage() {
+  /**
+   * Close the current message
+   */
+  closeMessage(): void {
     this._message.hide();
   }
 
-  delay(time?: number) {
+  /**
+   * Adds a delay to the queue
+   */
+  delay(time?: number): void {
     time = time || 250;
 
     this._addToQueue((complete) => {
       this._onQueueEmpty();
-      window.setTimeout(complete, time);
+      setTimeout(complete, time);
     });
   }
 
-  /** Skips the current animation */
-  stopCurrent() {
+  /**
+   * Stops the current animation
+   */
+  stopCurrent(): void {
     this._animator.exitAnimation();
     this._message.close();
   }
 
-  stop() {
+  /**
+   * Stops the current animation and clears the queue
+   */
+  stop(): void {
     // clear the queue
     this._queue.clear();
     this._animator.exitAnimation();
     this._message.hide();
   }
 
-  hasAnimation(name: string) {
+  /**
+   * Checks if an animation with the given name exists
+   */
+  hasAnimation(name: string): boolean {
     return this._animator.hasAnimation(name);
   }
 
-  /** Gets a list of animation names */
-  animations() {
+  /**
+   * Gets a list of animation names
+   */
+  animations(): string[] {
     return this._animator.animations();
   }
 
-  /** Play a random animation */
+  /**
+   * Plays a random animation
+   */
   animate(): boolean {
     const animations = this.animations();
     const anim = getRandomFromArray(animations);
@@ -349,7 +391,7 @@ export class VirtualAssistant {
    * Handle empty queue.
    * We need to transition the animation to an idle state
    */
-  private _onQueueEmpty() {
+  private _onQueueEmpty(): void {
     if (this._hidden || this._isIdleAnimation()) return;
     const idleAnim = this._getRandomIdleAnimation();
     this._idleIsPending = true;
@@ -357,7 +399,7 @@ export class VirtualAssistant {
     this._animator.showAnimation(idleAnim, this._onIdleComplete.bind(this));
   }
 
-  private _onIdleComplete(_: string, state: AnimatorStates) {
+  private _onIdleComplete(_: string, state: AnimatorStates): void {
     if (state === AnimatorStates.EXITED && !this._idleIsPending) {
       this._idleComplete?.();
       this._idleIsPending = false;
@@ -365,19 +407,19 @@ export class VirtualAssistant {
   }
 
   /** If the current animation is Idle */
-  private _isIdleAnimation() {
-    return this._animator.currentAnimationName?.startsWith("Idle");
+  private _isIdleAnimation(): boolean {
+    return this._animator.currentAnimationName?.startsWith("Idle") || false;
   }
 
   /** Gets Idle animations */
-  private _getIdleAnimations() {
+  private _getIdleAnimations(): string[] {
     const animations = this.animations();
 
     return animations.filter((a) => a.startsWith("Idle"));
   }
 
   /** Gets a random Idle animation */
-  private _getRandomIdleAnimation() {
+  private _getRandomIdleAnimation(): string {
     const idleAnimations = this._getIdleAnimations();
 
     return getRandomFromArray(idleAnimations);
@@ -385,7 +427,7 @@ export class VirtualAssistant {
 
   /**************************** Events ************************************/
 
-  private _setupEvents() {
+  private _setupEvents(): void {
     this._logger.log("Setting up event listeners");
 
     window.addEventListener("resize", this.reposition.bind(this));
@@ -393,13 +435,16 @@ export class VirtualAssistant {
     this._el.addEventListener("dblclick", this._onDoubleClick.bind(this));
   }
 
-  private _onDoubleClick() {
+  private _onDoubleClick(): void {
     if (!this.play("ClickedOn")) {
       this.animate();
     }
   }
 
-  reposition() {
+  /**
+   * Repositions the assistant withing the window, if out of bounds
+   */
+  reposition(): void {
     const margin = 5;
     const targetBoundingRect = this._el.getBoundingClientRect();
     const targetOffsetHeight = this._el.offsetHeight;
@@ -436,7 +481,7 @@ export class VirtualAssistant {
     this._message.reposition();
   }
 
-  private _onMouseDown(e: MouseEvent) {
+  private _onMouseDown(e: MouseEvent): void {
     e.preventDefault();
     this._logger.debug("MouseDown Event", this);
     this._startDrag(e);
@@ -444,7 +489,7 @@ export class VirtualAssistant {
 
   /**************************** Drag ************************************/
 
-  private _startDrag(e: MouseEvent) {
+  private _startDrag(e: MouseEvent): void {
     this._logger.debug("MouseDrag Event", this);
     // pause animations
     this.pause();
@@ -468,7 +513,7 @@ export class VirtualAssistant {
     );
   }
 
-  private _calculateClickOffset(e: MouseEvent) {
+  private _calculateClickOffset(e: MouseEvent): { top: number; left: number } {
     const mouseX = e.pageX;
     const mouseY = e.pageY;
     const targetBoundingRect = this._el.getBoundingClientRect();
@@ -478,7 +523,7 @@ export class VirtualAssistant {
     };
   }
 
-  private _updateLocation() {
+  private _updateLocation(): void {
     if (this._targetX && this._targetY) {
       this._el.style.top = `${this._targetY}px`;
       this._el.style.left = `${this._targetX}px`;
@@ -489,7 +534,7 @@ export class VirtualAssistant {
     }
   }
 
-  private _dragMove(e: MouseEvent) {
+  private _dragMove(e: MouseEvent): void {
     e.preventDefault();
     const x = e.clientX - (this._offsetLeft || 0);
     const y = e.clientY - (this._offsetTop || 0);
@@ -497,7 +542,7 @@ export class VirtualAssistant {
     this._targetY = y;
   }
 
-  private _finishDrag(mouseMoveListener?: any, mouseUpListener?: any) {
+  private _finishDrag(mouseMoveListener?: any, mouseUpListener?: any): void {
     this._logger.debug("FinishDrag Event", this);
     window.clearTimeout(this._dragUpdateLoop);
     // remove handles
@@ -509,19 +554,25 @@ export class VirtualAssistant {
     this.resume();
   }
 
-  private _addToQueue(func: VoidCbFn, scope?: this) {
+  private _addToQueue(func: VoidCbFn, scope?: this): void {
     if (scope) func = func.bind(scope);
     this._queue.add(func);
   }
 
   /**************************** Pause and Resume ************************************/
 
-  pause() {
+  /**
+   * Pauses the assistant
+   */
+  pause(): void {
     this._animator.pause();
     this._message.pause();
   }
 
-  resume() {
+  /**
+   * Resumes the assistant
+   */
+  resume(): void {
     this._animator.resume();
     this._message.resume();
   }

@@ -73,7 +73,7 @@ export class Animator {
   ): void {
     const addSounds = (sounds: VirtualAssistantAudioType["sounds"]) => {
       for (const [key, sound] of Object.entries(sounds)) {
-        this._sounds[key] = new Audio(sound);
+        this._sounds[key] = new Audio(sound.toString());
       }
     };
 
@@ -154,14 +154,14 @@ export class Animator {
     this._step();
   }
 
-  private _setupElement(el: HTMLDivElement, mapUrl: URL) {
+  private _setupElement(el: HTMLDivElement, map: VirtualAssistantType["map"]) {
     const [width, height] = this._data.framesize;
 
     setStylesForElement(el, {
       display: "none",
       width: `${width}px`,
       height: `${height}px`,
-      background: `url('${mapUrl.toString()}') no-repeat`,
+      background: `url('${map.toString()}') no-repeat`,
     });
 
     return el;
@@ -194,7 +194,7 @@ export class Animator {
       return currentFrame.exitBranch;
     } else if (branching) {
       let randomNumber = Math.random() * 100;
-      for (const branch of branching.branches) {
+      for (const branch of branching) {
         if (randomNumber <= branch.weight) {
           return branch.frameIndex;
         }
@@ -233,7 +233,7 @@ export class Animator {
     this._currentFrameIndex = newFrameIndex;
 
     // always switch frame data, unless we're at the last frame of an animation with a useExitBranching flag.
-    if (!(this._atLastFrame() && this._currentAnimation.useExitBranching)) {
+    if (this._atLastFrame() || this._currentAnimation.useExitBranching) {
       this._currentFrame =
         this._currentAnimation.frames[this._currentFrameIndex];
     }

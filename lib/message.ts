@@ -8,11 +8,14 @@ export enum MessagePosition {
   BottomRight,
 }
 
-export type MessageOptions = {
-  logger?: Logger;
-  rootElement: HTMLDivElement;
+export type MessageContentStyles = {
   contentWrapperStyle?: Partial<CSSStyleDeclaration>;
   contentMessageStyle?: Partial<CSSStyleDeclaration>;
+};
+
+export type MessageOptions = MessageContentStyles & {
+  logger?: Logger;
+  rootElement: HTMLDivElement;
 };
 
 export class Message {
