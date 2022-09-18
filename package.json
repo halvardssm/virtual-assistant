@@ -1,7 +1,11 @@
 {
-  "name": "virtual-assistant",
   "packageManager": "yarn@3.2.3",
+  "name": "virtual-assistant",
+  "version": "0.0.1",
   "type": "module",
+  "license": "MIT",
+  "author": "Halvard Mørstad",
+  "repository": "git@github.com:halvardssm/virtual-assistant.git",
   "files": [
     "dist"
   ],
