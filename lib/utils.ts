@@ -40,17 +40,6 @@ export type MimeTypeAudio =
   | "audio/webm"
   | string;
 
-export type Debugger = (text: string, context?: any) => void;
-export const getDebugger = (debug: boolean = false): Debugger => {
-  const prefix = "VA EVENT";
-  if (!debug) {
-    return () => {};
-  }
-  return (text, context) => {
-    console.debug(`${prefix};${text}:`, context);
-  };
-};
-
 export const getRandomFromArray = <T>(arr: T[]): T => {
   return arr[Math.floor(Math.random() * arr.length)];
 };

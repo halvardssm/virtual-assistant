@@ -44,7 +44,10 @@ describe("Animator test", () => {
 
   test("constructor", () => {
     const targetEl = document.createElement("div");
-    const c = new Animator(targetEl, mockVirtualAssistant);
+    const c = new Animator({
+      rootElement: targetEl,
+      virtualAssistant: mockVirtualAssistant,
+    });
 
     expect(c).toBeInstanceOf(Animator);
     expect(c).toHaveProperty("currentAnimationName", undefined);
@@ -66,7 +69,10 @@ describe("Animator test", () => {
 
   test("_setPreferredAudio", () => {
     const targetEl = document.createElement("div");
-    const c = new Animator(targetEl, mockVirtualAssistant);
+    const c = new Animator({
+      rootElement: targetEl,
+      virtualAssistant: mockVirtualAssistant,
+    });
 
     expect(c).toHaveProperty("_sounds", {});
 
@@ -100,19 +106,28 @@ describe("Animator test", () => {
 
   test("animations", () => {
     const targetEl = document.createElement("div");
-    const c = new Animator(targetEl, mockVirtualAssistant);
+    const c = new Animator({
+      rootElement: targetEl,
+      virtualAssistant: mockVirtualAssistant,
+    });
     expect(c.animations()).toEqual(["1"]);
   });
 
   test("hasAnimation", () => {
     const targetEl = document.createElement("div");
-    const c = new Animator(targetEl, mockVirtualAssistant);
+    const c = new Animator({
+      rootElement: targetEl,
+      virtualAssistant: mockVirtualAssistant,
+    });
     expect(c.hasAnimation("1")).toBeTruthy();
   });
 
   test("exitAnimation", () => {
     const targetEl = document.createElement("div");
-    const c = new Animator(targetEl, mockVirtualAssistant);
+    const c = new Animator({
+      rootElement: targetEl,
+      virtualAssistant: mockVirtualAssistant,
+    });
     expect(c).toHaveProperty("_exiting", false);
     c.exitAnimation();
     expect(c).toHaveProperty("_exiting", true);
@@ -120,7 +135,10 @@ describe("Animator test", () => {
 
   test("showAnimation", () => {
     const targetEl = document.createElement("div");
-    const c = new Animator(targetEl, mockVirtualAssistant);
+    const c = new Animator({
+      rootElement: targetEl,
+      virtualAssistant: mockVirtualAssistant,
+    });
     expect(c).toHaveProperty("_exiting", false);
     expect(c).toHaveProperty("_started", false);
     expect(c.showAnimation("1", () => {})).toBeTruthy();
@@ -137,7 +155,10 @@ describe("Animator test", () => {
   test("_setupElement", () => {
     const targetEl = document.createElement("div");
     const testEl = document.createElement("div");
-    const c = new Animator(targetEl, mockVirtualAssistant);
+    const c = new Animator({
+      rootElement: targetEl,
+      virtualAssistant: mockVirtualAssistant,
+    });
     // @ts-ignore
     c._setupElement(testEl, new URL("https://www.example.com"));
     expect(testEl).toHaveProperty("style.display", "none");
@@ -151,7 +172,10 @@ describe("Animator test", () => {
 
   test("_draw", () => {
     const targetEl = document.createElement("div");
-    const c = new Animator(targetEl, mockVirtualAssistant);
+    const c = new Animator({
+      rootElement: targetEl,
+      virtualAssistant: mockVirtualAssistant,
+    });
     // @ts-ignore
     c._draw();
     expect(c).toHaveProperty("_overlays[0].style.display", "none");
@@ -169,7 +193,10 @@ describe("Animator test", () => {
 
   test("_atLastFrame", () => {
     const targetEl = document.createElement("div");
-    const c = new Animator(targetEl, mockVirtualAssistant);
+    const c = new Animator({
+      rootElement: targetEl,
+      virtualAssistant: mockVirtualAssistant,
+    });
 
     // @ts-ignore
     expect(c._atLastFrame()).toBeTruthy();
@@ -188,7 +215,10 @@ describe("Animator test", () => {
   // TODO Improve test
   test("_step", () => {
     const targetEl = document.createElement("div");
-    const c = new Animator(targetEl, mockVirtualAssistant);
+    const c = new Animator({
+      rootElement: targetEl,
+      virtualAssistant: mockVirtualAssistant,
+    });
 
     expect(c).toHaveProperty("_currentAnimation", undefined);
     expect(c).toHaveProperty("currentAnimationName", undefined);

@@ -3,14 +3,14 @@ import { Queue } from "./queue";
 
 describe("Queue test", () => {
   test("constructor", () => {
-    const c = new Queue(() => {});
+    const c = new Queue({ onEmptyCallback: () => {} });
     expect(c).toBeInstanceOf(Queue);
     expect(c).toHaveProperty("_queue", []);
     expect(c).toHaveProperty("_onEmptyCallback");
     expect(c).toHaveProperty("_active", false);
   });
   test("add", () => {
-    const c = new Queue(() => {});
+    const c = new Queue({ onEmptyCallback: () => {} });
     const func = jest.fn();
     c.add(func);
     expect(func).toHaveBeenCalledTimes(1);

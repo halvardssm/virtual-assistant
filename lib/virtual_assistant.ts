@@ -1,9 +1,8 @@
 import { Queue } from "./queue";
 import { Animator, AnimatorStates } from "./animator";
 import { Message, MessageOptions } from "./message";
+import { Logger, LoggerOptions } from "./logger";
 import {
-  Debugger,
-  getDebugger,
   getRandomFromArray,
   setStylesForElement,
   VirtualAssistantType,
@@ -20,16 +19,19 @@ export enum Direction {
 }
 
 export type VirtualAssistantOptions = {
-  debug?: boolean;
+  loggerOptions?: LoggerOptions;
   classKey?: string;
-  messageOptions?: MessageOptions;
+  messageOptions?: Pick<
+    MessageOptions,
+    "contentMessageStyle" | "contentWrapperStyle"
+  >;
 };
 
 export class VirtualAssistant {
   readonly classKey: string;
 
+  private readonly _logger: Logger;
   private readonly _el: HTMLDivElement;
-  private readonly _debug: Debugger;
 
   private _queue: Queue;
   private _animator: Animator;
@@ -48,7 +50,10 @@ export class VirtualAssistant {
     virtualAssistant: VirtualAssistantType,
     options: VirtualAssistantOptions = {}
   ) {
-    this._debug = getDebugger(options.debug);
+    this._logger = new Logger({
+      prefix: `Virtual Assistant '${virtualAssistant.name}':`,
+      ...options.loggerOptions,
+    });
 
     this.classKey = `virtual-assistant${
       options.classKey ? `-${options.classKey}` : ""
@@ -65,9 +70,20 @@ export class VirtualAssistant {
 
     this.addToDom();
 
-    this._queue = new Queue(this._onQueueEmpty.bind(this));
-    this._animator = new Animator(this._el, virtualAssistant);
-    this._message = new Message(this._el, options.messageOptions);
+    this._queue = new Queue({
+      onEmptyCallback: this._onQueueEmpty.bind(this),
+      logger: this._logger,
+    });
+    this._animator = new Animator({
+      rootElement: this._el,
+      virtualAssistant,
+      logger: this._logger,
+    });
+    this._message = new Message({
+      rootElement: this._el,
+      logger: this._logger,
+      ...options.messageOptions,
+    });
 
     this._setupEvents();
   }
@@ -82,7 +98,7 @@ export class VirtualAssistant {
     if (!this.existsInDom()) {
       document.body.append(this._el);
     } else {
-      console.warn(
+      this._logger.warn(
         `Virtuall Assistant with classKey '${this.classKey}' already exists in DOM`
       );
     }
@@ -92,7 +108,7 @@ export class VirtualAssistant {
     if (this.existsInDom()) {
       document.body.removeChild(this._el);
     } else {
-      console.warn(
+      this._logger.warn(
         `Virtuall Assistant with classKey '${this.classKey}' does not exist in DOM`
       );
     }
@@ -228,9 +244,8 @@ export class VirtualAssistant {
   }
 
   speak(text: string, hold?: Message["_hold"]) {
-    this._debug("speak", text);
+    this._logger.info("AddingSpeak", text);
     this._addToQueue((complete) => {
-      this._debug("speak:onComplete", text);
       this._message.speak(complete, text, hold);
     }, this);
   }
@@ -371,7 +386,7 @@ export class VirtualAssistant {
   /**************************** Events ************************************/
 
   private _setupEvents() {
-    this._debug("Setting up event listeners");
+    this._logger.log("Setting up event listeners");
 
     window.addEventListener("resize", this.reposition.bind(this));
     this._el.addEventListener("mousedown", this._onMouseDown.bind(this));
@@ -392,7 +407,7 @@ export class VirtualAssistant {
     const windowInnerWidth = window.innerWidth;
     const windowInnerHeight = window.innerHeight;
 
-    this._debug("Reposition", {
+    this._logger.debug("Reposition", {
       targetBoundingRect,
       targetOffsetHeight,
       targetOffsetWidth,
@@ -423,14 +438,14 @@ export class VirtualAssistant {
 
   private _onMouseDown(e: MouseEvent) {
     e.preventDefault();
-    this._debug("MouseDown Event", this);
+    this._logger.debug("MouseDown Event", this);
     this._startDrag(e);
   }
 
   /**************************** Drag ************************************/
 
   private _startDrag(e: MouseEvent) {
-    this._debug("MouseDrag Event", this);
+    this._logger.debug("MouseDrag Event", this);
     // pause animations
     this.pause();
     this._message.hide(true);
@@ -483,7 +498,7 @@ export class VirtualAssistant {
   }
 
   private _finishDrag(mouseMoveListener?: any, mouseUpListener?: any) {
-    this._debug("FinishDrag Event", this);
+    this._logger.debug("FinishDrag Event", this);
     window.clearTimeout(this._dragUpdateLoop);
     // remove handles
     window.removeEventListener("mousemove", mouseMoveListener);

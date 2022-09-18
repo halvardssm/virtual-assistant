@@ -1,13 +1,26 @@
+import { Logger } from "./logger";
 import type { VoidCbFn, VoidFn } from "./utils";
 
+export type QueueOptions = {
+  logger?: Logger;
+  onEmptyCallback: VoidFn;
+};
+
 export class Queue {
+  private readonly _logger: Logger;
   private readonly _onEmptyCallback: VoidFn;
 
   private _active = false;
   private _queue: Array<VoidCbFn> = [];
 
-  constructor(onEmptyCallback: Queue["_onEmptyCallback"]) {
-    this._onEmptyCallback = onEmptyCallback;
+  constructor(options: QueueOptions) {
+    this._logger = options.logger
+      ? options.logger.clone({
+          prefix: options.logger.prefix + " Queue:",
+        })
+      : new Logger({ prefix: "Queue:" });
+
+    this._onEmptyCallback = options.onEmptyCallback;
   }
 
   add(func: VoidCbFn) {

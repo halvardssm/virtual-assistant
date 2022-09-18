@@ -24,16 +24,17 @@ export default defineConfig({
     react(),
     dts({
       insertTypesEntry: true,
+      exclude: "src"
     }),
   ],
   build: {
     outDir: "dist",
     lib: {
       entry: resolve(__dirname, "lib/index.ts"),
-      name: "virtual-assistant",
+      name: "index",
       formats: ["es", "umd"],
       fileName: (format) =>
-        `virtual-assistant${getFileEndingFromFormat(format)}`,
+        `index${getFileEndingFromFormat(format)}`,
     },
     rollupOptions: {
       external: ["react", "react-dom"],

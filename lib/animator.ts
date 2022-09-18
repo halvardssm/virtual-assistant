@@ -1,4 +1,6 @@
+import { Logger } from "./logger";
 import {
+  setStylesForElement,
   VirtualAssistantAnimationFramesType,
   VirtualAssistantAnimationType,
   VirtualAssistantAudioType,
@@ -15,11 +17,18 @@ export enum AnimatorStates {
   WAITING,
 }
 
+export type AnimatorOptions = {
+  logger?: Logger;
+  rootElement: HTMLDivElement;
+  virtualAssistant: VirtualAssistantType;
+};
+
 export class Animator {
   // TODO Change this to current animation (change to object with more info)
   currentAnimationName: string | undefined = undefined;
   isMuted = false;
 
+  private readonly _logger: Logger;
   private readonly _rootElement: HTMLDivElement;
   private readonly _data: VirtualAssistantType;
   private readonly _overlays: HTMLDivElement[];
@@ -34,21 +43,24 @@ export class Animator {
   private _endCallback: OnEndCallback | undefined = undefined;
   private _sounds: Record<string, HTMLAudioElement> = {};
 
-  constructor(
-    rootElement: HTMLDivElement,
-    virtualAssistant: VirtualAssistantType
-  ) {
-    this._rootElement = rootElement;
-    this._data = virtualAssistant;
+  constructor(options: AnimatorOptions) {
+    this._logger = options.logger
+      ? options.logger.clone({
+          prefix: options.logger.prefix + " Animator:",
+        })
+      : new Logger({ prefix: "Animator:" });
+
+    this._rootElement = options.rootElement;
+    this._data = options.virtualAssistant;
     this._overlays = [this._rootElement];
 
-    this._setPreferredAudio(virtualAssistant.audio);
-    this._setupElement(this._rootElement, virtualAssistant.map);
+    this._setPreferredAudio(this._data.audio);
+    this._setupElement(this._rootElement, this._data.map);
 
     let curr = this._rootElement;
     for (let i = 1; i < this._data.overlayCount; i++) {
       const nodeInnerDiv = document.createElement("div");
-      const inner = this._setupElement(nodeInnerDiv, virtualAssistant.map);
+      const inner = this._setupElement(nodeInnerDiv, this._data.map);
 
       curr.append(inner);
       this._overlays.push(inner);
@@ -85,10 +97,10 @@ export class Animator {
     if (maybeSupported !== undefined) {
       const { sounds, mime } = maybeSupported as VirtualAssistantAudioType;
       addSounds(sounds);
-      console.warn(`Audio format '${mime}'maybe supported`);
+      this._logger.warn(`Audio format '${mime}'maybe supported`);
     }
 
-    console.warn("No compatible audio format found");
+    this._logger.warn("No compatible audio format found");
   }
 
   animations() {
@@ -145,10 +157,12 @@ export class Animator {
   private _setupElement(el: HTMLDivElement, mapUrl: URL) {
     const [width, height] = this._data.framesize;
 
-    el.style.display = "none";
-    el.style.width = `${width}px`;
-    el.style.height = `${height}px`;
-    el.style.background = `url('${mapUrl.toString()}') no-repeat`;
+    setStylesForElement(el, {
+      display: "none",
+      width: `${width}px`,
+      height: `${height}px`,
+      background: `url('${mapUrl.toString()}') no-repeat`,
+    });
 
     return el;
   }

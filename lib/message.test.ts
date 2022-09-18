@@ -13,7 +13,7 @@ describe("Message test", () => {
     expect(Message).toHaveProperty("MESSAGE_MARGIN", 15);
 
     const targetEl = document.createElement("div");
-    const c = new Message(targetEl);
+    const c = new Message({ rootElement: targetEl });
 
     expect(c).toBeInstanceOf(Message);
     expect(c).toHaveProperty("_rootElement", targetEl);
@@ -30,7 +30,7 @@ describe("Message test", () => {
 
   test("show & hide", () => {
     const targetEl = document.createElement("div");
-    const c = new Message(targetEl);
+    const c = new Message({ rootElement: targetEl });
     expect(c).toHaveProperty("_messageContainerElement.style.display", "none");
     // @ts-ignore
     c._hidden = false;
@@ -52,7 +52,7 @@ describe("Message test", () => {
     );
     const targetEl = document.createElement("div");
 
-    const c = new Message(targetEl);
+    const c = new Message({ rootElement: targetEl });
     jest
       .spyOn(targetEl, "getBoundingClientRect")
       .mockImplementation(getBoundingClientRectMock);

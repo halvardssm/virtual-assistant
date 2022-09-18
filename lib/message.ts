@@ -1,3 +1,4 @@
+import { Logger } from "./logger";
 import { setStylesForElement, VoidFn } from "./utils";
 
 export enum MessagePosition {
@@ -8,7 +9,10 @@ export enum MessagePosition {
 }
 
 export type MessageOptions = {
-  contentStyle?: Partial<CSSStyleDeclaration>;
+  logger?: Logger;
+  rootElement: HTMLDivElement;
+  contentWrapperStyle?: Partial<CSSStyleDeclaration>;
+  contentMessageStyle?: Partial<CSSStyleDeclaration>;
 };
 
 export class Message {
@@ -16,6 +20,7 @@ export class Message {
   private static readonly CLOSE_MESSAGE_DELAY = 2000;
   private static readonly MESSAGE_MARGIN = 15;
 
+  private readonly _logger: Logger;
   private readonly _rootElement: HTMLDivElement;
   private readonly _contentElement: HTMLDivElement;
   private readonly _messageContainerElement: HTMLDivElement;
@@ -28,46 +33,54 @@ export class Message {
   private _hiding: number | null = null;
   private _addWord: VoidFn | null = null;
 
-  constructor(rootElement: HTMLDivElement, options: MessageOptions = {}) {
-    this._rootElement = rootElement;
+  constructor(options: MessageOptions) {
+    this._logger = options.logger
+      ? options.logger.clone({
+          prefix: options.logger.prefix + " Message:",
+        })
+      : new Logger({ prefix: "Message:" });
+
+    this._rootElement = options.rootElement;
 
     this._contentElement = document.createElement("div");
-
     setStylesForElement(this._contentElement, {
       position: "fixed",
       zIndex: "1000",
       cursor: "pointer",
-      background: "#ffc",
+      background: "#FFFFFF",
       color: "black",
       padding: "8px",
       border: "1px solid black",
-      borderRadius: "5px",
-      ...options?.contentStyle,
+      borderRadius: "2px",
+      ...options?.contentMessageStyle,
     });
 
     this._messageContainerElement = document.createElement("div");
     setStylesForElement(this._messageContainerElement, {
       maxWidth: "200px",
       minWidth: "120px",
-      fontFamily: '"Microsoft Sans", "sans-serif"',
       fontSize: "10pt",
       display: "none",
-      ...options?.contentStyle,
+      ...options?.contentWrapperStyle,
     });
+
     this._messageContainerElement.append(this._contentElement);
     document.body.append(this._messageContainerElement);
   }
 
   reposition() {
-    for (const side in MessagePosition) {
-      if (typeof side === "number") {
-        this._position(side);
-        if (!this._isOutOfBounds()) break;
-      }
+    const sides = Object.values(MessagePosition)
+      .map(Number)
+      .filter((v) => !isNaN(v));
+    for (const side of sides) {
+      this._position(side);
+      if (!this._isOutOfBounds()) break;
     }
   }
 
   speak(complete: VoidFn, text: string, hold?: Message["_hold"]) {
+    this._logger.info("Speak", text);
+
     this._hidden = false;
     this.show();
     // set height to auto
@@ -83,10 +96,12 @@ export class Message {
       this._contentElement
     ).width;
     this._contentElement.replaceChildren();
+
     this.reposition();
 
     this._complete = complete;
     this._sayWords(text, !!hold, complete);
+    this._logger.info("SpeakDone", text);
   }
 
   show() {
@@ -140,10 +155,8 @@ export class Message {
     const messageOffsetHeight = this._messageContainerElement.offsetHeight;
     const messageOffsetWidth = this._messageContainerElement.offsetWidth;
 
-    const messageStyle: Pick<
-      CSSStyleDeclaration,
-      "top" | "marginTop" | "left" | "marginLeft" | "backgroundPosition"
-    > = {
+    const messageStyle: Partial<CSSStyleDeclaration> = {
+      position: "absolute",
       top: "",
       marginTop: "",
       left: "",
@@ -200,6 +213,9 @@ export class Message {
         break;
       }
     }
+
+    this._logger.debug(messageStyle);
+
     setStylesForElement(this._messageContainerElement, messageStyle);
   }
 
