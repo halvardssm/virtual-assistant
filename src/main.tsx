@@ -9,7 +9,7 @@ export function App() {
 
   return <div>
     Hello World
-    <button onClick={() => va.current?.speak('Hello World', true)}>Say Hello</button>
+    <button onClick={() => va.current.speak('Hello World', true)}>Say Hello</button>
   </div>
 }
 

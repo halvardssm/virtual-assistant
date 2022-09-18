@@ -98,6 +98,8 @@ export class VirtualAssistant {
    * Adds the virtual assistant to the DOM, if not already present
    */
   addToDom(): void {
+    this._logger.debug("Adding virtual assistant to DOM");
+
     if (!this.existsInDom()) {
       document.body.append(this._el);
     } else {
@@ -111,6 +113,8 @@ export class VirtualAssistant {
    * Removes the virtual assistant from the DOM, if present
    */
   removeFromDom(): void {
+    this._logger.debug("Removing virtual assistant from DOM");
+
     if (this.existsInDom()) {
       document.body.removeChild(this._el);
     } else {

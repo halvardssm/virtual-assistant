@@ -233,7 +233,7 @@ export class Animator {
     this._currentFrameIndex = newFrameIndex;
 
     // always switch frame data, unless we're at the last frame of an animation with a useExitBranching flag.
-    if (this._atLastFrame() || this._currentAnimation.useExitBranching) {
+    if (!this._atLastFrame() || !this._currentAnimation.useExitBranching) {
       this._currentFrame =
         this._currentAnimation.frames[this._currentFrameIndex];
     }
