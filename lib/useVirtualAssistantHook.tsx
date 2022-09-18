@@ -3,7 +3,7 @@ import "./virtual-assistant.css";
 import { VirtualAssistantType } from "./utils";
 import {VirtualAssistant, VirtualAssistantOptions} from './virtual_assistant'
 
-export async function useVirtualAssistant(
+export function useVirtualAssistant(
   virtualAssistant: VirtualAssistantType,
   options?: VirtualAssistantOptions
 ) {

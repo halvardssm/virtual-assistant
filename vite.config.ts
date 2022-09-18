@@ -1,27 +1,50 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import {resolve} from 'node:path'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import { resolve } from "node:path";
+import dts from "vite-plugin-dts";
+import { ModuleFormat } from "rollup";
+
+const getFileEndingFromFormat = (format: ModuleFormat) => {
+  switch (format) {
+    case "es":
+    case "esm":
+    case "module":
+      return ".mjs";
+    case "cjs":
+    case "commonjs":
+      return ".cjs";
+    default:
+      return `.${format}.js`;
+  }
+};
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  root:'./src',
-  plugins: [react()],
+  plugins: [
+    react(),
+    dts({
+      insertTypesEntry: true,
+    }),
+  ],
   build: {
+    outDir: "dist",
     lib: {
-      entry: resolve(__dirname, 'lib/index.ts'),
-      name:'virtual-assistant'
+      entry: resolve(__dirname, "lib/index.ts"),
+      name: "virtual-assistant",
+      formats: ["es", "umd"],
+      fileName: (format) =>
+        `virtual-assistant${getFileEndingFromFormat(format)}`,
     },
     rollupOptions: {
-      // make sure to externalize deps that shouldn't be bundled
-      // into your library
-      external: ['react'],
+      external: ["react", "react-dom"],
       output: {
         // Provide global variables to use in the UMD build
         // for externalized deps
         globals: {
-          react: 'React'
-        }
-      }
-    }
-  }
-})
+          react: "React",
+          "react-dom": "ReactDOM",
+        },
+      },
+    },
+  },
+});
