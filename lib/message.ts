@@ -1,4 +1,4 @@
-import { VoidFn } from "./utils";
+import { setStylesForElement, VoidFn } from "./utils";
 
 export enum MessagePosition {
   TopLeft,
@@ -6,6 +6,10 @@ export enum MessagePosition {
   BottomLeft,
   BottomRight,
 }
+
+export type MessageOptions = {
+  contentStyle?: Partial<CSSStyleDeclaration>;
+};
 
 export class Message {
   private static readonly WORD_SPEAK_TIME = 200;
@@ -24,17 +28,32 @@ export class Message {
   private _hiding: number | null = null;
   private _addWord: VoidFn | null = null;
 
-  constructor(rootElement: HTMLDivElement) {
+  constructor(rootElement: HTMLDivElement, options: MessageOptions = {}) {
     this._rootElement = rootElement;
 
     this._contentElement = document.createElement("div");
-    this._contentElement.classList.add("virtual-assistant-message-content");
+
+    setStylesForElement(this._contentElement, {
+      position: "fixed",
+      zIndex: "1000",
+      cursor: "pointer",
+      background: "#ffc",
+      color: "black",
+      padding: "8px",
+      border: "1px solid black",
+      borderRadius: "5px",
+      ...options?.contentStyle,
+    });
 
     this._messageContainerElement = document.createElement("div");
-    this._messageContainerElement.classList.add(
-      "virtual-assistant-message-container"
-    );
-    this._messageContainerElement.style.display = "none";
+    setStylesForElement(this._messageContainerElement, {
+      maxWidth: "200px",
+      minWidth: "120px",
+      fontFamily: '"Microsoft Sans", "sans-serif"',
+      fontSize: "10pt",
+      display: "none",
+      ...options?.contentStyle,
+    });
     this._messageContainerElement.append(this._contentElement);
     document.body.append(this._messageContainerElement);
   }
@@ -121,48 +140,67 @@ export class Message {
     const messageOffsetHeight = this._messageContainerElement.offsetHeight;
     const messageOffsetWidth = this._messageContainerElement.offsetWidth;
 
-    this._messageContainerElement.classList.remove(
-      "virtual-assistant-message-top-left",
-      "virtual-assistant-message-top-right",
-      "virtual-assistant-message-bottom-right",
-      "virtual-assistant-message-bottom-left"
-    );
+    const messageStyle: Pick<
+      CSSStyleDeclaration,
+      "top" | "marginTop" | "left" | "marginLeft" | "backgroundPosition"
+    > = {
+      top: "",
+      marginTop: "",
+      left: "",
+      marginLeft: "",
+      backgroundPosition: "",
+    };
 
-    let left: number, top: number, selectedPosition: string;
     switch (position) {
-      case MessagePosition.TopLeft:
+      case MessagePosition.TopLeft: {
         // right side of the message next to the right side of the virtual assistant
-        selectedPosition = "top-left";
-        left = targetBoundingRect.right - messageOffsetWidth;
-        top =
+        const top =
           targetBoundingRect.top - messageOffsetHeight - Message.MESSAGE_MARGIN;
+        const left = targetBoundingRect.right - messageOffsetWidth;
+        messageStyle.top = `${top}px`;
+        messageStyle.left = `${left}px`;
+        messageStyle.marginTop = "0px";
+        messageStyle.marginLeft = "-50px";
         break;
-      case MessagePosition.TopRight:
+      }
+      case MessagePosition.TopRight: {
         // left side of the message next to the left side of the virtual assistant
-        selectedPosition = "top-right";
-        left = targetBoundingRect.left;
-        top =
+        const top =
           targetBoundingRect.top - messageOffsetHeight - Message.MESSAGE_MARGIN;
+        const left = targetBoundingRect.left;
+        messageStyle.top = `${top}px`;
+        messageStyle.left = `${left}px`;
+        messageStyle.marginTop = "0px";
+        messageStyle.marginLeft = "50px";
+        messageStyle.backgroundPosition = "-10px 0";
         break;
+      }
       case MessagePosition.BottomRight:
-        // right side of the message next to the right side of the virtual assistant
-        selectedPosition = "bottom-right";
-        left = targetBoundingRect.left;
-        top = targetBoundingRect.bottom + Message.MESSAGE_MARGIN;
+        {
+          // right side of the message next to the right side of the virtual assistant
+          const top = targetBoundingRect.bottom + Message.MESSAGE_MARGIN;
+          const left = targetBoundingRect.left;
+          messageStyle.top = `${top}px`;
+          messageStyle.left = `${left}px`;
+          messageStyle.marginTop = "-16px";
+          messageStyle.marginLeft = "50px";
+          messageStyle.backgroundPosition = "-10px -16px";
+          break;
+        }
         break;
-      case MessagePosition.BottomLeft:
+      case MessagePosition.BottomLeft: {
         // left side of the message next to the left side of the virtual assistant
-        selectedPosition = "bottom-left";
-        left = targetBoundingRect.right - messageOffsetWidth;
-        top = targetBoundingRect.bottom + Message.MESSAGE_MARGIN;
+        const top = targetBoundingRect.bottom + Message.MESSAGE_MARGIN;
+        const left = targetBoundingRect.right - messageOffsetWidth;
+        messageStyle.top = `${top}px`;
+        messageStyle.left = `${left}px`;
+        messageStyle.marginTop = "-16px";
+        messageStyle.marginLeft = "-50px";
+        messageStyle.backgroundPosition = "0px -16px";
         break;
+      }
     }
-
-    this._messageContainerElement.style.top = `${top}px`;
-    this._messageContainerElement.style.left = `${left}px`;
-    this._messageContainerElement.classList.add(
-      `virtual-assistant-message-${selectedPosition}`
-    );
+    setStylesForElement(this._messageContainerElement, messageStyle);
   }
 
   private _isOutOfBounds(): boolean {

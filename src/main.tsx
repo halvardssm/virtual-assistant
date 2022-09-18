@@ -5,11 +5,11 @@ import {useVirtualAssistant} from '../lib'
 import Clippy from '../agents/Clippy'
 
 export function App() {
-  const va = useVirtualAssistant(Clippy)
+  const va = useVirtualAssistant(Clippy,{debug: true})
 
   return <div>
     Hello World
-    <button onClick={() => va?.speak('Hello World')}>Say Hello</button>
+    <button onClick={() => va.current?.speak('Hello World')}>Say Hello</button>
     </div>
 }
 

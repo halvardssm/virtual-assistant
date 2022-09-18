@@ -1,5 +1,4 @@
 import { useEffect, useRef } from "react";
-import "./virtual-assistant.css";
 import { VirtualAssistantType } from "./utils";
 import {VirtualAssistant, VirtualAssistantOptions} from './virtual_assistant'
 
@@ -19,5 +18,5 @@ export function useVirtualAssistant(
         };
     })
 
-  return ref.current
+  return ref
 }

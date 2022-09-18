@@ -54,3 +54,14 @@ export const getDebugger = (debug: boolean = false): Debugger => {
 export const getRandomFromArray = <T>(arr: T[]): T => {
   return arr[Math.floor(Math.random() * arr.length)];
 };
+
+export const setStylesForElement = (
+  el: HTMLElement,
+  styles: Partial<CSSStyleDeclaration> = {}
+): void => {
+  for (const [key, style] of Object.entries(styles)) {
+    if (style != null) {
+      el.style[key as any] = style.toString();
+    }
+  }
+};

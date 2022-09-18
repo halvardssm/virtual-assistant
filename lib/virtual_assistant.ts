@@ -1,10 +1,11 @@
 import { Queue } from "./queue";
 import { Animator, AnimatorStates } from "./animator";
-import { Message } from "./message";
+import { Message, MessageOptions } from "./message";
 import {
   Debugger,
   getDebugger,
   getRandomFromArray,
+  setStylesForElement,
   VirtualAssistantType,
   VoidCbFn,
   VoidFn,
@@ -21,6 +22,7 @@ export enum Direction {
 export type VirtualAssistantOptions = {
   debug?: boolean;
   classKey?: string;
+  messageOptions?: MessageOptions;
 };
 
 export class VirtualAssistant {
@@ -53,14 +55,19 @@ export class VirtualAssistant {
     }`;
 
     this._el = document.createElement("div");
+    setStylesForElement(this._el, {
+      position: "fixed",
+      zIndex: "1000",
+      cursor: "pointer",
+      display: "none",
+    });
     this._el.classList.add(this.classKey);
-    this._el.style.display = "none";
 
     this.addToDom();
 
     this._queue = new Queue(this._onQueueEmpty.bind(this));
     this._animator = new Animator(this._el, virtualAssistant);
-    this._message = new Message(this._el);
+    this._message = new Message(this._el, options.messageOptions);
 
     this._setupEvents();
   }
@@ -221,7 +228,9 @@ export class VirtualAssistant {
   }
 
   speak(text: string, hold?: Message["_hold"]) {
+    this._debug("speak", text);
     this._addToQueue((complete) => {
+      this._debug("speak:onComplete", text);
       this._message.speak(complete, text, hold);
     }, this);
   }
