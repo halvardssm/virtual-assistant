@@ -13,4 +13,4 @@ jobs:
       - name: Create Release
         uses: halvardssm/github-action-tag-release@1.0.4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GH_TOKEN }}

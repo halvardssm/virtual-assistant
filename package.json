@@ -1,7 +1,7 @@
 {
   "packageManager": "yarn@3.2.3",
   "name": "virtual-assistant",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "type": "module",
   "license": "MIT",
   "author": "Halvard Mørstad",
