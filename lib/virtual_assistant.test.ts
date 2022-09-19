@@ -39,7 +39,7 @@ describe("VirtualAssistant test", () => {
     expect(c._el).toBeInstanceOf(HTMLDivElement);
     // @ts-ignore
     expect(c._el.classList).toContain("virtual-assistant");
-    expect(c).toHaveProperty("_debug");
+    expect(c).toHaveProperty("_logger");
     expect(c).toHaveProperty("_queue");
     // @ts-ignore
     expect(c._queue).toBeInstanceOf(Queue);

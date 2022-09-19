@@ -56,36 +56,18 @@ describe("Message test", () => {
     jest
       .spyOn(targetEl, "getBoundingClientRect")
       .mockImplementation(getBoundingClientRectMock);
-    const classList = new Set<string>();
     // @ts-ignore
     c._messageContainerElement = {
       getBoundingClientRect: getBoundingClientRectMock,
       offsetHeight: 100,
       offsetWidth: 100,
-      classList: {
-        remove: (...classes: string[]) => {
-          classes.forEach((cl) => {
-            classList.delete(cl);
-          });
-        },
-        add: (...classes: string[]) => {
-          classes.forEach((cl) => {
-            classList.add(cl);
-          });
-        },
-      },
       style: {},
     };
-
-    expect([...classList.values()]).toMatchObject([]);
 
     // @ts-ignore
     c._position(MessagePosition.TopLeft);
     expect(c).toHaveProperty("_messageContainerElement.style.top", "85px");
     expect(c).toHaveProperty("_messageContainerElement.style.left", "100px");
-    expect([...classList.values()]).toEqual([
-      "virtual-assistant-message-top-left",
-    ]);
     // @ts-ignore
     expect(c._isOutOfBounds()).toBe(false);
 
@@ -93,9 +75,6 @@ describe("Message test", () => {
     c._position(MessagePosition.TopRight);
     expect(c).toHaveProperty("_messageContainerElement.style.top", "85px");
     expect(c).toHaveProperty("_messageContainerElement.style.left", "200px");
-    expect([...classList.values()]).toEqual([
-      "virtual-assistant-message-top-right",
-    ]);
     // @ts-ignore
     expect(c._isOutOfBounds()).toBe(false);
 
@@ -103,9 +82,6 @@ describe("Message test", () => {
     c._position(MessagePosition.BottomLeft);
     expect(c).toHaveProperty("_messageContainerElement.style.top", "215px");
     expect(c).toHaveProperty("_messageContainerElement.style.left", "100px");
-    expect([...classList.values()]).toEqual([
-      "virtual-assistant-message-bottom-left",
-    ]);
     // @ts-ignore
     expect(c._isOutOfBounds()).toBe(false);
 
@@ -113,9 +89,6 @@ describe("Message test", () => {
     c._position(MessagePosition.BottomRight);
     expect(c).toHaveProperty("_messageContainerElement.style.top", "215px");
     expect(c).toHaveProperty("_messageContainerElement.style.left", "200px");
-    expect([...classList.values()]).toEqual([
-      "virtual-assistant-message-bottom-right",
-    ]);
     // @ts-ignore
     expect(c._isOutOfBounds()).toBe(false);
   });
