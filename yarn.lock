@@ -505,6 +505,31 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@halvardm/virtual-assistant@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "@halvardm/virtual-assistant@workspace:."
+  dependencies:
+    "@jest/globals": ^29.0.3
+    "@jest/types": ^29.0.3
+    "@types/node": ^18.7.18
+    "@types/react": ^18.0.17
+    "@types/react-dom": ^18.0.6
+    "@vitejs/plugin-react": ^2.1.0
+    eslint: ^8.23.1
+    jest: ^29.0.3
+    jest-environment-jsdom: ^29.0.3
+    prettier: ^2.7.1
+    react: ^18.2.0
+    react-dom: ^18.2.0
+    rollup: ^2.79.0
+    ts-jest: ^29.0.1
+    ts-node: ^10.9.1
+    typescript: ^4.6.4
+    vite: ^3.1.0
+    vite-plugin-dts: ^1.5.0
+  languageName: unknown
+  linkType: soft
+
 "@humanwhocodes/config-array@npm:^0.10.4":
   version: 0.10.4
   resolution: "@humanwhocodes/config-array@npm:0.10.4"
@@ -5371,31 +5396,6 @@ __metadata:
   checksum: 2b83283de1222ca549a7ef57f46e8d49c6669213348db78b7045bce36a3b5843ff1e9f709ebf74574e06223461ee1f264f8cc9a26a0060a79a27de079d8286ef
   languageName: node
   linkType: hard
-
-"virtual-assistant@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "virtual-assistant@workspace:."
-  dependencies:
-    "@jest/globals": ^29.0.3
-    "@jest/types": ^29.0.3
-    "@types/node": ^18.7.18
-    "@types/react": ^18.0.17
-    "@types/react-dom": ^18.0.6
-    "@vitejs/plugin-react": ^2.1.0
-    eslint: ^8.23.1
-    jest: ^29.0.3
-    jest-environment-jsdom: ^29.0.3
-    prettier: ^2.7.1
-    react: ^18.2.0
-    react-dom: ^18.2.0
-    rollup: ^2.79.0
-    ts-jest: ^29.0.1
-    ts-node: ^10.9.1
-    typescript: ^4.6.4
-    vite: ^3.1.0
-    vite-plugin-dts: ^1.5.0
-  languageName: unknown
-  linkType: soft
 
 "vite-plugin-dts@npm:^1.5.0":
   version: 1.5.0
