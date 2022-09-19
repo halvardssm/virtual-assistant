@@ -5,14 +5,14 @@ on:
     types: [published]
 
 env:
-  NODE_VERSION: lts
+  NODE_VERSION: lts/*
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'yarn'
@@ -20,3 +20,5 @@ jobs:
         run: yarn --immutable
       - name: Publish
         run: yarn npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}

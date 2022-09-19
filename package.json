@@ -29,7 +29,7 @@
     "format:check": "prettier --check \"lib/**/*.ts\"",
     "lint:fix": "eslint --fix",
     "lint:check": "echo 'checking eslint' && eslint && echo 'eslint complete'",
-    "tsc:check": "'checking tsc' && tsc --noEmit && echo 'tsc complete'",
+    "tsc:check": "echo 'checking tsc' && tsc --noEmit && echo 'tsc complete'",
     "test": "jest"
   },
   "devDependencies": {

@@ -1,8 +1,6 @@
 import { afterEach, describe, expect, jest, test } from "@jest/globals";
 import { Animator } from "./animator";
 import { VirtualAssistantType } from "./utils";
-import { Queue } from "./queue";
-import { Message } from "./message";
 
 const mockVirtualAssistant: VirtualAssistantType = {
   overlayCount: 0,
