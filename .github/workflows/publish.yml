@@ -5,7 +5,7 @@ on:
     types: [published]
 
 env:
-  NODE_VERSION: lts
+  NODE_VERSION: lts/*
 
 jobs:
   publish:
