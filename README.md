@@ -1,8 +1,20 @@
+![npm (scoped)](https://img.shields.io/npm/v/@halvardm/virtual-assistant?style=for-the-badge)
+
 # Virtual Assistant
 
 Your very own virtual assistant. Perfect for when you need to create a helper for your website, or simply want to create an interactive companion.
 
-Inspired by [Clippy.JS](https://github.com/smore-inc/clippy.js) and completely refactored, you can bring your favorite Microsoft helpers to the web, or create your own!
+Inspired by [Clippy.JS](https://github.com/smore-inc/clippy.js) and completely refactored! 
+
+You can bring your favorite Microsoft helpers to the web, or create your own!
+
+## Installation
+
+```
+yarn add @halvardm/virtual-assistant
+
+npm i @halvardm/virtual-assistant
+```
 
 ## Usage
 
