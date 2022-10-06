@@ -1,4 +1,4 @@
-![npm (scoped)](https://img.shields.io/npm/v/@halvardm/virtual-assistant?style=for-the-badge)
+[![npm (scoped)](https://img.shields.io/npm/v/@halvardm/virtual-assistant?style=for-the-badge)](https://www.npmjs.com/package/@halvardm/virtual-assistant)
 
 # Virtual Assistant
 
